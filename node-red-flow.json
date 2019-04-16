@@ -1,0 +1,919 @@
+[
+    {
+        "id": "cfc7b240.43ace",
+        "type": "subflow",
+        "name": "Debounce",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 140,
+                "y": 180,
+                "wires": [
+                    {
+                        "id": "5b31efd7.185a8"
+                    },
+                    {
+                        "id": "3cb31309.eecb1c"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 880,
+                "y": 160,
+                "wires": [
+                    {
+                        "id": "5b31efd7.185a8",
+                        "port": 0
+                    },
+                    {
+                        "id": "6eb31012.f50af",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": []
+    },
+    {
+        "id": "5b31efd7.185a8",
+        "type": "function",
+        "z": "cfc7b240.43ace",
+        "name": "",
+        "func": "\nreturn {enabled: false};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 530,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3cb31309.eecb1c",
+        "type": "delay",
+        "z": "cfc7b240.43ace",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "10",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 380,
+        "y": 160,
+        "wires": [
+            [
+                "6eb31012.f50af"
+            ]
+        ]
+    },
+    {
+        "id": "6eb31012.f50af",
+        "type": "function",
+        "z": "cfc7b240.43ace",
+        "name": "",
+        "func": "\nreturn { enabled: true };",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 630,
+        "y": 160,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7c9ffba.3e59404",
+        "type": "tab",
+        "label": "sunctl",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "1f638529.55ce3b",
+        "type": "mqtt in",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "topic": "/sunctl/data",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "c2bfdcaa.a1bc9",
+        "x": 410,
+        "y": 520,
+        "wires": [
+            [
+                "7f8f2534.2dadec"
+            ]
+        ]
+    },
+    {
+        "id": "c961eadf.f94ba8",
+        "type": "inject",
+        "z": "7c9ffba.3e59404",
+        "name": "init",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 410,
+        "y": 120,
+        "wires": [
+            [
+                "82e5baea.81e208"
+            ]
+        ]
+    },
+    {
+        "id": "82e5baea.81e208",
+        "type": "sqlite",
+        "z": "7c9ffba.3e59404",
+        "mydb": "718e2eb6.2909a",
+        "sqlquery": "fixed",
+        "sql": "CREATE TABLE IF NOT EXISTS data (\n    id INTEGER PRIMARY KEY,\n    epoch INTEGER NOT NULL,\n    intensity INTEGER NOT NULL\n)",
+        "name": "CREATE TABLE data",
+        "x": 720,
+        "y": 120,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7f8f2534.2dadec",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "prepare query",
+        "func": "return {\n    params:{\n        '$epoch': msg.payload.epoch, \n        '$intensity': msg.payload.intensity\n    }\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 520,
+        "wires": [
+            [
+                "813a7bab.35f378",
+                "dd41a5e4.c6fff8"
+            ]
+        ]
+    },
+    {
+        "id": "813a7bab.35f378",
+        "type": "sqlite",
+        "z": "7c9ffba.3e59404",
+        "mydb": "718e2eb6.2909a",
+        "sqlquery": "prepared",
+        "sql": "INSERT INTO data VALUES (NULL, $epoch, $intensity)",
+        "name": "INSERT",
+        "x": 820,
+        "y": 520,
+        "wires": [
+            [
+                "a1efc762.4d3538"
+            ]
+        ]
+    },
+    {
+        "id": "fb34d3ce.36ffe",
+        "type": "ui_chart",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "group": "608adf9d.73117",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "label": "Light intensity",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "dd HH:mm",
+        "interpolate": "linear",
+        "nodata": "No data",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#00b500",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 1500,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "45887095.09448",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "format",
+        "func": "\nreturn { \n    payload: [{\n        \"series\": [\"intensity\"],\n        \"data\": [msg.payload.map(function(o) {\n            return { x: o.epoch * 1000, y: o.intensity };\n        })],\n        \"labels\": []\n    }]\n}",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1330,
+        "y": 520,
+        "wires": [
+            [
+                "fb34d3ce.36ffe"
+            ]
+        ]
+    },
+    {
+        "id": "e8cd5ad8.776f28",
+        "type": "sqlite",
+        "z": "7c9ffba.3e59404",
+        "mydb": "718e2eb6.2909a",
+        "sqlquery": "prepared",
+        "sql": "SELECT * from data WHERE epoch > $from AND epoch <= $to;",
+        "name": "SELECT",
+        "x": 1180,
+        "y": 520,
+        "wires": [
+            [
+                "45887095.09448",
+                "419fe811.4a6ca8"
+            ]
+        ]
+    },
+    {
+        "id": "1c61c6d8.67f439",
+        "type": "inject",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "topic": "",
+        "payload": "86400",
+        "payloadType": "num",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 670,
+        "y": 460,
+        "wires": [
+            [
+                "2681b8c0.12c458"
+            ]
+        ]
+    },
+    {
+        "id": "c41b4258.94707",
+        "type": "inject",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "x": 650,
+        "y": 400,
+        "wires": [
+            [
+                "18799877.e2e578"
+            ]
+        ]
+    },
+    {
+        "id": "a1efc762.4d3538",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "filter",
+        "func": "if (msg.topic == 'range:period') {\n    context.period = msg.payload;\n} else if (msg.topic == 'range:to') {\n    context.to = msg.payload;\n}\n\nvar ONE_DAY = 86400;\nvar period = context.period != null ? context.period : ONE_DAY;\nvar to = context.to != null ? context.to : Date.now();\n\nvar toInSeconds = Math.round(to / 1000)\n\nvar from = toInSeconds - period;\n\nreturn {\n    params: {\n        '$from': from,\n        '$to': toInSeconds\n    }\n};\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1030,
+        "y": 520,
+        "wires": [
+            [
+                "e8cd5ad8.776f28",
+                "419fe811.4a6ca8"
+            ]
+        ]
+    },
+    {
+        "id": "9c5b1ba8.da67a8",
+        "type": "ui_switch",
+        "z": "7c9ffba.3e59404",
+        "name": "auto/manual",
+        "label": "auto",
+        "tooltip": "",
+        "group": "e626e3b6.a5f41",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "decouple": "true",
+        "topic": "auto",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 950,
+        "y": 820,
+        "wires": [
+            [
+                "d39e2cb5.abf85",
+                "a62cf11d.315be"
+            ]
+        ]
+    },
+    {
+        "id": "b0ab837b.7cf5",
+        "type": "ui_switch",
+        "z": "7c9ffba.3e59404",
+        "name": "on/off",
+        "label": "Manual setting (on/off)",
+        "tooltip": "",
+        "group": "e626e3b6.a5f41",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "decouple": "true",
+        "topic": "manual",
+        "style": "",
+        "onvalue": "true",
+        "onvalueType": "bool",
+        "onicon": "",
+        "oncolor": "",
+        "offvalue": "false",
+        "offvalueType": "bool",
+        "officon": "",
+        "offcolor": "",
+        "x": 970,
+        "y": 920,
+        "wires": [
+            [
+                "bc95b1a1.a497c",
+                "a62cf11d.315be"
+            ]
+        ]
+    },
+    {
+        "id": "22b4907b.eeb7a",
+        "type": "mqtt out",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "topic": "/sunctl/commands",
+        "qos": "1",
+        "retain": "true",
+        "broker": "c2bfdcaa.a1bc9",
+        "x": 1450,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "1f077964.8f5767",
+        "type": "mqtt in",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "topic": "/sunctl/status",
+        "qos": "2",
+        "datatype": "json",
+        "broker": "c2bfdcaa.a1bc9",
+        "x": 410,
+        "y": 820,
+        "wires": [
+            [
+                "20223df9.673612",
+                "a03f87c1.2454d8",
+                "b58e22f8.213fb",
+                "273f49d8.938f96",
+                "8d3a0cac.2c6a1",
+                "91319e20.e10de"
+            ]
+        ]
+    },
+    {
+        "id": "20223df9.673612",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "manual feedback",
+        "func": "\nreturn {\n    enabled: true,\n    payload: msg.payload.config.manual\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 710,
+        "y": 920,
+        "wires": [
+            [
+                "b0ab837b.7cf5"
+            ]
+        ]
+    },
+    {
+        "id": "a03f87c1.2454d8",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "auto feedback",
+        "func": "\nreturn {\n    enabled: true,\n    payload: msg.payload.config.auto\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 820,
+        "wires": [
+            [
+                "9c5b1ba8.da67a8"
+            ]
+        ]
+    },
+    {
+        "id": "b58e22f8.213fb",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "threshold feedback",
+        "func": "\nreturn {\n    payload: msg.payload.config.light_max\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 710,
+        "y": 1000,
+        "wires": [
+            [
+                "e6aedc66.4c33c",
+                "137860e6.2ca6cf"
+            ]
+        ]
+    },
+    {
+        "id": "a62cf11d.315be",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "format",
+        "func": "\nreturn {\n    payload: { [msg.topic]: msg.payload }\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1250,
+        "y": 820,
+        "wires": [
+            [
+                "22b4907b.eeb7a",
+                "695c2a5b.7a3954"
+            ]
+        ]
+    },
+    {
+        "id": "e6aedc66.4c33c",
+        "type": "ui_slider",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "label": "Target",
+        "tooltip": "Target light value. The light shuts down when this is reached.",
+        "group": "e626e3b6.a5f41",
+        "order": 3,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "outs": "end",
+        "topic": "light_max",
+        "min": 0,
+        "max": "1024",
+        "step": 1,
+        "x": 970,
+        "y": 1000,
+        "wires": [
+            [
+                "a62cf11d.315be"
+            ]
+        ]
+    },
+    {
+        "id": "273f49d8.938f96",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "threshold feedback",
+        "func": "\nreturn {\n    payload: msg.payload.config.light_min\n}\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 710,
+        "y": 1120,
+        "wires": [
+            [
+                "6db7d042.e2573",
+                "cb3b83ca.57b58"
+            ]
+        ]
+    },
+    {
+        "id": "6db7d042.e2573",
+        "type": "ui_slider",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "label": "Cutoff",
+        "tooltip": "Minimum natural light required to enable the artificial light.",
+        "group": "e626e3b6.a5f41",
+        "order": 5,
+        "width": "4",
+        "height": "1",
+        "passthru": false,
+        "outs": "end",
+        "topic": "light_min",
+        "min": 0,
+        "max": "1024",
+        "step": 1,
+        "x": 970,
+        "y": 1120,
+        "wires": [
+            [
+                "a62cf11d.315be"
+            ]
+        ]
+    },
+    {
+        "id": "8d3a0cac.2c6a1",
+        "type": "ui_text",
+        "z": "7c9ffba.3e59404",
+        "group": "f0ba57a9.16b0c8",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "name": "",
+        "label": "last light value",
+        "format": "{{msg.payload.light}}",
+        "layout": "row-spread",
+        "x": 700,
+        "y": 1300,
+        "wires": []
+    },
+    {
+        "id": "137860e6.2ca6cf",
+        "type": "ui_text_input",
+        "z": "7c9ffba.3e59404",
+        "name": "Target text",
+        "label": "",
+        "tooltip": "",
+        "group": "e626e3b6.a5f41",
+        "order": 4,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "mode": "number",
+        "delay": "0",
+        "topic": "light_max",
+        "x": 950,
+        "y": 1060,
+        "wires": [
+            [
+                "a62cf11d.315be"
+            ]
+        ]
+    },
+    {
+        "id": "cb3b83ca.57b58",
+        "type": "ui_text_input",
+        "z": "7c9ffba.3e59404",
+        "name": "Cutoff text",
+        "label": "",
+        "tooltip": "",
+        "group": "e626e3b6.a5f41",
+        "order": 6,
+        "width": "2",
+        "height": "1",
+        "passthru": false,
+        "mode": "number",
+        "delay": "0",
+        "topic": "light_min",
+        "x": 950,
+        "y": 1180,
+        "wires": [
+            [
+                "a62cf11d.315be"
+            ]
+        ]
+    },
+    {
+        "id": "89cb699c.95d0b8",
+        "type": "ui_gauge",
+        "z": "7c9ffba.3e59404",
+        "name": "On/Off indicator",
+        "group": "f0ba57a9.16b0c8",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "gtype": "gage",
+        "title": "Current status",
+        "label": "",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1",
+        "colors": [
+            "#ca3838",
+            "#e6e600",
+            "#00b500"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 960,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "91319e20.e10de",
+        "type": "function",
+        "z": "7c9ffba.3e59404",
+        "name": "on/off feedback",
+        "func": "\nreturn { payload: msg.payload.state };",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 700,
+        "y": 1240,
+        "wires": [
+            [
+                "89cb699c.95d0b8"
+            ]
+        ]
+    },
+    {
+        "id": "18799877.e2e578",
+        "type": "ui_date_picker",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "label": "before",
+        "group": "608adf9d.73117",
+        "order": 4,
+        "width": "6",
+        "height": "1",
+        "passthru": true,
+        "topic": "range:to",
+        "x": 830,
+        "y": 400,
+        "wires": [
+            [
+                "a1efc762.4d3538"
+            ]
+        ]
+    },
+    {
+        "id": "bc95b1a1.a497c",
+        "type": "subflow:cfc7b240.43ace",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "env": [],
+        "x": 950,
+        "y": 880,
+        "wires": [
+            [
+                "b0ab837b.7cf5"
+            ]
+        ]
+    },
+    {
+        "id": "d39e2cb5.abf85",
+        "type": "subflow:cfc7b240.43ace",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "env": [],
+        "x": 950,
+        "y": 780,
+        "wires": [
+            [
+                "9c5b1ba8.da67a8"
+            ]
+        ]
+    },
+    {
+        "id": "2925b7a1.5c3178",
+        "type": "comment",
+        "z": "7c9ffba.3e59404",
+        "name": "DB seeding",
+        "info": "",
+        "x": 530,
+        "y": 40,
+        "wires": []
+    },
+    {
+        "id": "4a445bb8.0cd814",
+        "type": "comment",
+        "z": "7c9ffba.3e59404",
+        "name": "Time series metrics",
+        "info": "",
+        "x": 550,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "fd72ddf9.4128b",
+        "type": "comment",
+        "z": "7c9ffba.3e59404",
+        "name": "Status & configuration",
+        "info": "",
+        "x": 560,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "2681b8c0.12c458",
+        "type": "ui_dropdown",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "label": "Period",
+        "tooltip": "",
+        "place": "Select option",
+        "group": "608adf9d.73117",
+        "order": 3,
+        "width": "6",
+        "height": "1",
+        "passthru": true,
+        "options": [
+            {
+                "label": "1 Hour",
+                "value": 3600,
+                "type": "num"
+            },
+            {
+                "label": "3 Hours",
+                "value": 10800,
+                "type": "num"
+            },
+            {
+                "label": "12 Hours",
+                "value": 43200,
+                "type": "num"
+            },
+            {
+                "label": "1 Day",
+                "value": 86400,
+                "type": "num"
+            },
+            {
+                "label": "2 Days",
+                "value": 172800,
+                "type": "num"
+            },
+            {
+                "label": "5 Days",
+                "value": 432000,
+                "type": "num"
+            },
+            {
+                "label": "1 Week",
+                "value": 604800,
+                "type": "num"
+            }
+        ],
+        "payload": "",
+        "topic": "range:period",
+        "x": 830,
+        "y": 460,
+        "wires": [
+            [
+                "a1efc762.4d3538"
+            ]
+        ]
+    },
+    {
+        "id": "695c2a5b.7a3954",
+        "type": "debug",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 1400,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "419fe811.4a6ca8",
+        "type": "debug",
+        "z": "7c9ffba.3e59404",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "x": 1510,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "dd41a5e4.c6fff8",
+        "type": "debug",
+        "z": "7c9ffba.3e59404",
+        "name": "sign of life",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 830,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "c2bfdcaa.a1bc9",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "broker",
+        "broker": "YOUR BROKER",
+        "port": "9010",
+        "tls": "65ae33.64ef41cc",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "718e2eb6.2909a",
+        "type": "sqlitedb",
+        "z": "",
+        "db": "/data/db/sunctl.db",
+        "mode": "RWC"
+    },
+    {
+        "id": "608adf9d.73117",
+        "type": "ui_group",
+        "z": "",
+        "name": "Metrics",
+        "tab": "3f42d05f.bf611",
+        "order": 3,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "e626e3b6.a5f41",
+        "type": "ui_group",
+        "z": "",
+        "name": "Controls",
+        "tab": "3f42d05f.bf611",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "f0ba57a9.16b0c8",
+        "type": "ui_group",
+        "z": "",
+        "name": "Status",
+        "tab": "3f42d05f.bf611",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "65ae33.64ef41cc",
+        "type": "tls-config",
+        "z": "",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "YOUR_BROKER",
+        "verifyservercert": true
+    },
+    {
+        "id": "3f42d05f.bf611",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Home",
+        "icon": "wi-wu-sunny",
+        "order": 2,
+        "disabled": false,
+        "hidden": false
+    }
+]
